@@ -36,11 +36,10 @@ export const SideBard = () => {
             try {
                 const response = await fetch('https://dummyjson.com/products');
                 const data: FerchReponse = await response.json();
-                console.log(data)
                 const categories = [...new Set(data.products.map(val => val.category))]
                 setCategories(categories)
             } catch (error) {
-                console.log(error)
+                throw new Error('Error API' + error)
             }
         }
         fetcgCategories()
@@ -52,7 +51,6 @@ export const SideBard = () => {
 
     const handlecategory = (category: string) => {
         setSelectedCategory(category)
-        console.log(category)
     }
 
     const handleKeyWordClick = (keyword: string) => {
