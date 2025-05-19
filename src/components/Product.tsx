@@ -23,7 +23,7 @@ export const Product: React.FC<Product> = (props) => {
             if (id) {
                 try {
                     const { data } = await axios(`https://dummyjson.com/products/${id}`)
-                    console.log(product);
+
                     setTimeout(() => {
                         steProduct(data)
                     }, 200)

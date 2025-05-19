@@ -32,6 +32,8 @@ export const MainContent = () => {
     const itemsPerPage = 12;
 
     useEffect(() => {
+
+
         let url = `https://dummyjson.com/products?limit=${itemsPerPage}&skip=${(currentpage - 1) * itemsPerPage}`;
 
         if (keyword) {

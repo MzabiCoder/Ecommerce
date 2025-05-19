@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useFilter } from "./FilterContext"
-
+import { useFetch } from "./useFetch"
 interface Product {
     category: string
 }
@@ -9,6 +9,8 @@ interface FerchReponse {
     products: Product[]
 }
 export const SideBard = () => {
+
+    const { data, loading, error } = useFetch('https://dummyjson.com/products');
     const { searchQuery,
         setSearchQuery,
         selectedCategory,
@@ -20,7 +22,7 @@ export const SideBard = () => {
         keyword,
         setKeyword, } = useFilter()
 
-
+    const [time, setTime] = useState(new Date())
     const [categories, setCategories] = useState<string[]>([]);
     const [keywords] = useState<string[]>([
         "apple",
@@ -32,6 +34,8 @@ export const SideBard = () => {
     ]);
 
     useEffect(() => {
+
+        console.error('sfkjghsk')
         const fetcgCategories = async () => {
             try {
                 const response = await fetch('https://dummyjson.com/products');
@@ -43,6 +47,12 @@ export const SideBard = () => {
             }
         }
         fetcgCategories()
+
+        const interval = setInterval(() => {
+            setTime(new Date())
+        }, 1000);
+
+        return () => clearInterval(interval)
     }, [])
 
     const handleMaxPrice = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,8 +75,17 @@ export const SideBard = () => {
         setMaxPrice(undefined)
         setKeyword('')
     }
+    // if (!loading) {
+    //     return <h1>...loading</h1>
+    // }
+    // if (error) {
+    //     return <h1>{error}</h1>
+    // }
+
     return (
         <div className="w-64 p5 h-screen p-4">
+            {/* {<h1>{JSON.stringify(data)}</h1>} */}
+            <h1>{time.toLocaleDateString()}</h1>
             <h1 className="text-2xl font-bold mb-10 mt-40">React Store</h1>
             <section>
                 <input onChange={e => setSearchQuery(e.target.value)} value={searchQuery} placeholder="Search Product" type="text" className="border-2 rounded px-2 sm:mb-0" />
