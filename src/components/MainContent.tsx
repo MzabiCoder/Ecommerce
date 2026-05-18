@@ -5,6 +5,7 @@ import { Tally3 } from "lucide-react";
 import axios from "axios";
 import BookCard from "./BookCard";
 import { Spinner } from "./spinner";
+import { ProductModal } from "./ProductModal";
 
 interface Product {
     id: number
@@ -29,7 +30,8 @@ export const MainContent = () => {
     const [products, setProducts] = useState<Product[]>([])
     const [filter, setFilter] = useState('all')
     const [currentpage, setCurrentpage] = useState(1)
-    const [dropdownOpen, setDropdownOpen] = useState(true);
+    const [dropdownOpen, setDropdownOpen] = useState(true)
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const itemsPerPage = 12;
 
     useEffect(() => {
@@ -142,10 +144,10 @@ export const MainContent = () => {
                             onClick={() => setDropdownOpen(!dropdownOpen)}
                             aria-haspopup="true"
                             aria-expanded={dropdownOpen}
-                            className={`group flex items-center gap-3 pl-3 pr-4 py-2 rounded-xl border text-sm font-medium transition-all duration-200 ${
+                            className={`group flex items-center gap-3 pl-3 pr-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                                 dropdownOpen
-                                    ? 'bg-indigo-500/10 border-indigo-500/40 text-white'
-                                    : 'bg-slate-800/80 border-white/10 text-slate-300 hover:bg-slate-700/60 hover:border-white/20 hover:text-white'
+                                    ? 'bg-indigo-500/10 text-white'
+                                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/60 hover:text-white'
                             }`}
                         >
                             <span className={`p-1 rounded-lg transition-colors duration-200 ${dropdownOpen ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-slate-400 group-hover:text-slate-300'}`}>
@@ -237,19 +239,25 @@ export const MainContent = () => {
                                 key={product.id}
                                 className={i === 0 ? 'col-span-2 row-span-2' : ''}
                             >
-                                <BookCard {...product} isFeatured={i === 0} />
+                                <BookCard
+                                    {...product}
+                                    isFeatured={i === 0}
+                                    onSelect={() => setSelectedProduct(product)}
+                                />
                             </div>
                         ))}
                     </div>
                 )}
             </div>
 
+            <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+
             {/* Pagination */}
             <div className="border-t border-white/[0.06] px-8 py-5 flex items-center justify-between">
                 <button
                     onClick={() => handlepageChang(currentpage - 1)}
                     disabled={currentpage === 1}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 border border-white/10 text-slate-300 hover:text-white hover:border-white/20 text-sm font-medium transition-all disabled:opacity-25 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white text-sm font-medium transition-all disabled:opacity-25 disabled:cursor-not-allowed"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -283,7 +291,7 @@ export const MainContent = () => {
                 <button
                     onClick={() => handlepageChang(currentpage + 1)}
                     disabled={currentpage === totlaPage}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 border border-white/10 text-slate-300 hover:text-white hover:border-white/20 text-sm font-medium transition-all disabled:opacity-25 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white text-sm font-medium transition-all disabled:opacity-25 disabled:cursor-not-allowed"
                 >
                     Next
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

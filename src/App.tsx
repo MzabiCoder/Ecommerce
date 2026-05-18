@@ -3,7 +3,6 @@ import { SideBard } from "./components/SideBar"
 import { MainContent } from './components/MainContent.tsx'
 import { Product } from "./components/Product.tsx"
 
-
 const App = () => {
   return <Router>
     <div className="flex h-screen bg-slate-950 overflow-hidden">

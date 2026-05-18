@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { useFilter } from "./FilterContext"
 import { useFetch } from "./useFetch"
+
 interface Product {
     category: string
 }
@@ -8,7 +10,9 @@ interface Product {
 interface FerchReponse {
     products: Product[]
 }
+
 export const SideBard = () => {
+    const [collapsed, setCollapsed] = useState(false)
 
     const { data, loading, error } = useFetch('https://dummyjson.com/products');
     const { searchQuery,
@@ -75,17 +79,53 @@ export const SideBard = () => {
         setMaxPrice(undefined)
         setKeyword('')
     }
-    // if (!loading) {
-    //     return <h1>...loading</h1>
-    // }
-    // if (error) {
-    //     return <h1>{error}</h1>
-    // }
 
     return (
-        <aside className="w-72 h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 shadow-2xl flex flex-col">
+        <>
+        {/* Re-open tab — fixed to left edge when collapsed */}
+        <AnimatePresence>
+            {collapsed && (
+                <motion.button
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -16 }}
+                    transition={{ duration: 0.2 }}
+                    onClick={() => setCollapsed(false)}
+                    className="fixed left-0 top-8 z-50 flex items-center gap-1.5 pl-2 pr-3 py-2 rounded-r-xl bg-slate-800 shadow-lg group"
+                    aria-label="Show sidebar"
+                >
+                    <svg className="w-4 h-4 text-slate-400 group-hover:text-indigo-400 transition-colors duration-150" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span className="text-[11px] font-semibold text-slate-400 group-hover:text-indigo-400 tracking-wide transition-colors duration-150">Show</span>
+                </motion.button>
+            )}
+        </AnimatePresence>
+
+        <motion.aside
+            animate={{ width: collapsed ? 0 : 288 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 280 }}
+            className="h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 shadow-2xl flex flex-col overflow-hidden flex-shrink-0">
+            {/* Inner wrapper keeps content at full width while aside animates */}
+            <div className="w-72 flex flex-col flex-1 overflow-hidden">
             {/* Header */}
-            <div className="flex flex-col items-center px-6 pt-8 pb-6 border-b border-white/10">
+            <div className="relative flex flex-col items-center px-6 pt-8 pb-6 border-b border-white/10">
+                {/* Collapse button */}
+                <button
+                    onClick={() => setCollapsed(true)}
+                    className="absolute top-4 right-4 group flex items-center gap-1.5 pl-2.5 pr-3 py-1.5 rounded-xl bg-white/5 hover:bg-indigo-500/15 transition-all duration-200"
+                >
+                    <svg
+                        className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-400 transition-colors duration-200"
+                        fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span className="text-[11px] font-semibold text-slate-400 group-hover:text-indigo-400 tracking-wide transition-colors duration-200">
+                        Hide
+                    </span>
+                </button>
+
                 <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center mb-3">
                     <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -111,7 +151,7 @@ export const SideBard = () => {
                             value={searchQuery}
                             placeholder="Search products..."
                             type="text"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition"
+                            className="w-full bg-white/5 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition"
                         />
                     </div>
                 </div>
@@ -126,7 +166,7 @@ export const SideBard = () => {
                                 value={minPrice ?? ""}
                                 onChange={e => setMinPrice(parseInt(e.target.value))}
                                 placeholder="Min"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl pl-6 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition"
+                                className="w-full bg-white/5 rounded-xl pl-6 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition"
                                 type="number"
                                 min={0}
                             />
@@ -137,7 +177,7 @@ export const SideBard = () => {
                                 value={maxPrice ?? ""}
                                 onChange={handleMaxPrice}
                                 placeholder="Max"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl pl-6 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition"
+                                className="w-full bg-white/5 rounded-xl pl-6 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition"
                                 type="number"
                                 min={0}
                             />
@@ -173,10 +213,10 @@ export const SideBard = () => {
                             <button
                                 key={index}
                                 onClick={() => handleKeyWordClick(kw)}
-                                className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-150 ${
+                                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all duration-150 ${
                                     keyword === kw
-                                        ? "bg-indigo-500 border-indigo-400 text-white shadow-md shadow-indigo-500/30"
-                                        : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white"
+                                        ? "bg-indigo-500 text-white shadow-md shadow-indigo-500/30"
+                                        : "bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
                                 }`}
                             >
                                 #{kw}
@@ -190,11 +230,13 @@ export const SideBard = () => {
             <div className="px-6 py-5 border-t border-white/10">
                 <button
                     onClick={handleReset}
-                    className="w-full py-2.5 rounded-xl text-sm font-semibold bg-white/5 border border-white/10 text-slate-300 hover:bg-red-500/20 hover:border-red-400/40 hover:text-red-300 transition-all duration-200"
+                    className="w-full py-2.5 rounded-xl text-sm font-semibold bg-white/5 text-slate-300 hover:bg-red-500/20 hover:text-red-300 transition-all duration-200"
                 >
                     Reset Filters
                 </button>
             </div>
-        </aside>
+            </div>{/* end inner wrapper */}
+        </motion.aside>
+        </>
     )
 }
